@@ -10,7 +10,7 @@ def move_projectile():
       did_collide = _move_sprite()
       # do the other stuff
       
-def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets: [arcade.SpriteList]):
+def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets: arcade.SpriteList):
     
     assert isinstance(walls, arcade.SpriteList)
     assert isinstance(targets, arcade.SpriteList)
@@ -64,6 +64,7 @@ def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets
             #back sprite up until no longer inside object and zero out speed 
             while len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])) > 0:
                 moving_sprite.center_y += adjust_y
+            assert not len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets]))
             moving_sprite.change_y = 0
 
         # move in x-axis
@@ -80,6 +81,7 @@ def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets
             #back sprite up until no longer inside object and zero out speed
             while len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])) > 0:
                 moving_sprite.center_x += adjust_x
+            assert not len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets]))
             moving_sprite.change_x = 0
 
     if moving_sprite.change_r:
@@ -95,6 +97,8 @@ def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets
 
         hit_list_r = arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])
 
+        adjust_r = 0
+
         if len(hit_list_r) > 0:
             adjust_r = -0.01
             if moving_sprite.change_r < 0:
@@ -103,10 +107,13 @@ def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets
         while len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])) > 0:
             moving_sprite.radians += adjust_r
         
+        assert not len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])), f"moving_sprite {type(moving_sprite).__name__} still in collision"
         moving_sprite.change_r = 0
-            
 
-    assert len(arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])) == 0
+    result = arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])
+    if len(result) > 0:
+        print(result)
+    assert len(result) == 0
 
     complete_hit_list = hit_list_y
 
@@ -117,6 +124,6 @@ def _move_sprite(moving_sprite: entity.Ball, walls: [arcade.SpriteList], targets
     for hit in hit_list_r:
         if hit not in complete_hit_list:
             complete_hit_list.append(hit)
-
+        
     return complete_hit_list
             

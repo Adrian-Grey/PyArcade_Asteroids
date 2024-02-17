@@ -1,6 +1,6 @@
 import arcade
 
-class Ball(arcade.Sprite):
+class Thing(arcade.Sprite):
     image_src = "./asteroids.png"
     def __init__(self, center_x, center_y, change_x, change_y, change_r = 0):
         # Take the parameters of the init function above,
@@ -13,7 +13,10 @@ class Ball(arcade.Sprite):
         self.change_r = change_r
         self.friction = 0.025
         self.max_speed = 6
+        self.hp = 0
+        self.max_hp = 0
 
     def update(self, targets, walls):
         import physics
-        return physics._move_sprite(self, targets, walls)
+        result = physics._move_sprite(self, targets, walls)
+        return result
