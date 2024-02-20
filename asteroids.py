@@ -232,7 +232,8 @@ class MyGame(arcade.Window):
     def on_draw(self):
         """ Called whenever we need to draw the window. """
         arcade.start_render()
-        self.player.draw()
+        if self.player:
+            self.player.draw()
         self.projectiles.draw()
         self.targets.draw()
         self.walls.draw()
@@ -243,47 +244,48 @@ class MyGame(arcade.Window):
         arcade.draw_text(f"Score: {self.score}", 10, 20, arcade.color.WHITE, 14)
 
     def update(self, delta_time):
+        if self.player:
+            if self.left_pressed:
+                self.player.change_x += -ACCEL
+            if self.right_pressed:
+                self.player.change_x += ACCEL
+            if self.up_pressed:
+                self.player.change_y += ACCEL
+            if self.down_pressed:
+                self.player.change_y += -ACCEL
 
-        if self.left_pressed:
-            self.player.change_x += -ACCEL
-        if self.right_pressed:
-            self.player.change_x += ACCEL
-        if self.up_pressed:
-            self.player.change_y += ACCEL
-        if self.down_pressed:
-            self.player.change_y += -ACCEL
+            if self.mb_left_held:
+                projectile = self.player.spawn_projectile(self._mouse_x, self._mouse_y, arcade.MOUSE_BUTTON_LEFT)
+                if projectile:
+                    self.projectiles.append(projectile)
+            
+            if self.mb_right_held:
+                projectile = self.player.spawn_projectile(self._mouse_x, self._mouse_y, arcade.MOUSE_BUTTON_RIGHT)
+                if projectile:
+                    self.projectiles.append(projectile)
 
-        if self.mb_left_held:
-            projectile = self.player.spawn_projectile(self._mouse_x, self._mouse_y, arcade.MOUSE_BUTTON_LEFT)
-            if projectile:
-                self.projectiles.append(projectile)
-        
-        if self.mb_right_held:
-            projectile = self.player.spawn_projectile(self._mouse_x, self._mouse_y, arcade.MOUSE_BUTTON_RIGHT)
-            if projectile:
-                self.projectiles.append(projectile)
+            player_hit_list = self.player.update(self.walls, self.targets)
+            
+            if len(player_hit_list):
+                for hit in player_hit_list:
+                    if isinstance(hit, Target):
+                        self.player.hp -= hit.max_hp
+                        print(f"player took {hit.max_hp} damage")
+                        hit.remove_from_sprite_lists()
+                    if isinstance(hit, Projectile):
+                        self.player.hp -= hit.damage
+                        print(f"player took {hit.damage} damage")
+                        hit.remove_from_sprite_lists()
 
-        player_hit_list = self.player.update(self.walls, self.targets)
-        
-        if len(player_hit_list):
-            for hit in player_hit_list:
-                if isinstance(hit, Target):
-                    self.player.hp -= hit.max_hp
-                    print(f"player took {hit.max_hp} damage")
-                    hit.remove_from_sprite_lists()
-                if isinstance(hit, Projectile):
-                    self.player.hp -= hit.damage
-                    print(f"player took {hit.damage} damage")
-                    hit.remove_from_sprite_lists()
+            if self.score >= self.upgrade_threshhold:
+                self.player.fastball_cooldown = max(self.player.fastball_cooldown * 0.7, 5)
+                self.upgrade_threshhold += 50
 
-        if self.score >= self.upgrade_threshhold:
-            self.player.fastball_cooldown = max(self.player.fastball_cooldown * 0.7, 5)
-            self.upgrade_threshhold += 50
-
-        if self.player.hp <= 0:
-            self.effects.append(Explosion(self.player.center_x, self.player.center_y, 10, 255, 255, 0))
-            print("GAME OVER")
-            self.player.remove_from_sprite_lists()
+            if self.player.hp <= 0:
+                self.effects.append(Explosion(self.player.center_x, self.player.center_y, 10, 255, 255, 0))
+                print("GAME OVER")
+                self.player.remove_from_sprite_lists()
+                self.player = None
 
         for projectile in self.projectiles:
 
@@ -308,7 +310,8 @@ class MyGame(arcade.Window):
         for target in self.targets:
             
             collidable_list.clear()
-            collidable_list.append(self.player)
+            if self.player:
+                collidable_list.append(self.player)
             # Make a spritelist of other targets this target might collide with excluding itself  
             #Turning collision with other targets off for now       
             # for sprite in self.targets:
@@ -383,7 +386,8 @@ class MyGame(arcade.Window):
     def on_mouse_motion(self, x, y, dx, dy):
         mouse_x = x
         mouse_y = y
-        self.player.point_at(x,y)
+        if self.player:
+            self.player.point_at(x,y)
 
 def main():
     window = MyGame(640, 480, "Asteroids Ripoff")
