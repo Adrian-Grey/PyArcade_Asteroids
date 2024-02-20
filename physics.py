@@ -21,7 +21,7 @@ def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets:
     
     # first make sure the sprite isn't already in collision with one of the wall
     if len(arcade.check_for_collision_with_list(moving_sprite, walls)) > 0:
-        arcade._circular_check(moving_sprite, [walls])
+        arcade._circular_check(moving_sprite, walls)
 
     # now check if the proposed move (change_x, change_y) would put it 
     # in collision with one of the walls
@@ -112,7 +112,8 @@ def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets:
 
     result = arcade.check_for_collision_with_lists(moving_sprite, [walls, targets])
     if len(result) > 0:
-        print(result)
+        for res in result:
+            print(f"collided with:{type(res).__name__}")
     assert len(result) == 0
 
     complete_hit_list = hit_list_y

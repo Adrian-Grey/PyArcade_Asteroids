@@ -308,6 +308,7 @@ class MyGame(arcade.Window):
         for target in self.targets:
             
             collidable_list.clear()
+            collidable_list.append(self.player)
             # Make a spritelist of other targets this target might collide with excluding itself  
             #Turning collision with other targets off for now       
             # for sprite in self.targets:
@@ -320,6 +321,11 @@ class MyGame(arcade.Window):
                 for hit in target_hit_list:
                     if isinstance(hit, Wall):
                         target.remove_from_sprite_lists()  
+                    if isinstance(hit, PlayerBall):
+                        self.player.hp -= target.max_hp
+                        print(f"player took {target.max_hp} damage")
+                        target.remove_from_sprite_lists()
+                        
             
             if target.hp <= 0:
                 self.score += target.max_hp
