@@ -127,11 +127,11 @@ def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets:
 
     for hit in hit_list_x:
         if hit not in complete_hit_list:
-            complete_hit_list.append(hit)
+            complete_hit_list.extend(hit)
 
     for hit in hit_list_r:
         if hit not in complete_hit_list:
-            complete_hit_list.append(hit)
+            complete_hit_list.extend(hit)
         
     return complete_hit_list
             
