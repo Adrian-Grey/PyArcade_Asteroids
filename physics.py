@@ -4,8 +4,6 @@ import math
 
 tau = math.pi * 2
 
-#New rotation is broken
-
 def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets: arcade.SpriteList):
     
     assert isinstance(walls, arcade.SpriteList)
@@ -123,15 +121,19 @@ def _move_sprite(moving_sprite: entity.Thing, walls: arcade.SpriteList, targets:
             print(f"moving_sprite {type(moving_sprite).__name__} still in collision with:{type(res).__name__}")
     assert len(final_check) == 0
 
-    complete_hit_list = hit_list_y
+    complete_hit_list = []
+
+    for hit in hit_list_y:
+        if hit not in complete_hit_list:
+            complete_hit_list.append(hit)
 
     for hit in hit_list_x:
         if hit not in complete_hit_list:
-            complete_hit_list.extend(hit)
+            complete_hit_list.append(hit)
 
     for hit in hit_list_r:
         if hit not in complete_hit_list:
-            complete_hit_list.extend(hit)
+            complete_hit_list.append(hit)
         
     return complete_hit_list
             
