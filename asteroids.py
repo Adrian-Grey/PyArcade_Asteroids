@@ -4,17 +4,9 @@ import math
 import physics
 import random
 
-#Made objects destructible, added little explosions, added cooldowns to shooting
-#Fastball attack speed now scales with score
-#Asteroids now dissapear upon hitting screen edge, don't collide with each other, and new ones spawn constantly
-#Target spawning speeds up over time
-#Asteroids now have variable HP (2-5) and score is awarded based on max HP of asteroid destroyed
-#Asteroid size now varies based on max HP
-#Enabled autofire
-#Made timer class
-#Still have a bug where a target colliding with the player will cause player sprite to jump positions oddly
-#Player can now take damage from collision with asteroids or projectiles, added death effect on zero hp
-#Can't figure out how to properly delete player entity on death
+# Implement PyArcade collision radius thing
+# Divide map into sectors for collision testing, test entities only agaist their own or adjacent sectors
+# Instead of checking for collision multiple times for all the entity types, add every collidable to one list and run detection once
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
